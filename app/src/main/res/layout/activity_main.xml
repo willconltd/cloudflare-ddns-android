@@ -52,6 +52,20 @@
         app:layout_constraintTop_toBottomOf="@id/statusText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/showIpButton"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <Button
+        android:id="@+id/showIpButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Show Public IP"
+        android:textSize="14sp"
+        style="?attr/borderlessButtonStyle"
+        app:layout_constraintTop_toBottomOf="@id/updateButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/pinShortcutButton"
         app:layout_constraintWidth_percent="0.8" />
 
@@ -64,7 +78,7 @@
         android:text="Add Home Screen Shortcut"
         android:textSize="14sp"
         style="?attr/borderlessButtonStyle"
-        app:layout_constraintTop_toBottomOf="@id/updateButton"
+        app:layout_constraintTop_toBottomOf="@id/showIpButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

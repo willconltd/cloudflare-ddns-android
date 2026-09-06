@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         binding.updateButton.setOnClickListener { performUpdate() }
         binding.settingsButton.setOnClickListener { showSettingsDialog() }
         binding.pinShortcutButton.setOnClickListener { pinHomeScreenShortcut() }
+        binding.showIpButton.setOnClickListener { showPublicIp() }
 
         if (intent.hasExtra(EXTRA_AUTO_RUN)) {
             performUpdate()
@@ -154,6 +155,20 @@ class MainActivity : AppCompatActivity() {
             .setIntent(shortcutIntent)
             .build()
         ShortcutManagerCompat.requestPinShortcut(this, shortcut, null)
+    }
+
+    private fun showPublicIp() {
+        binding.showIpButton.isEnabled = false
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val ip = withContext(Dispatchers.IO) { fetchPublicIp() }
+                Toast.makeText(this@MainActivity, "Public IP: $ip", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                binding.showIpButton.isEnabled = true
+            }
+        }
     }
 
     private fun performUpdate() {
