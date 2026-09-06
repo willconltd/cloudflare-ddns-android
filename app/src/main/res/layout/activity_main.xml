@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Settings"
+        android:src="@android:drawable/ic_menu_manage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/hostnameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/statusText"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:layout_marginTop="80dp" />
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="#666666"
+        app:layout_constraintTop_toBottomOf="@id/hostnameText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/updateButton" />
+
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="32dp"
+        android:text="Update DNS Now"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/statusText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/pinShortcutButton"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <Button
+        android:id="@+id/pinShortcutButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
+        android:text="Add Home Screen Shortcut"
+        android:textSize="14sp"
+        style="?attr/borderlessButtonStyle"
+        app:layout_constraintTop_toBottomOf="@id/updateButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintWidth_percent="0.8" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

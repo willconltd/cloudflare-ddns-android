@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DNS Updater</string>
+    <string name="shortcut_short_label">Update DNS</string>
+    <string name="shortcut_long_label">Update Cloudflare DNS Now</string>
+</resources>
