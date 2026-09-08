@@ -2,6 +2,8 @@ package com.cfddns.updater
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
@@ -158,17 +160,48 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showPublicIp() {
+        val token = prefs.getString(KEY_TOKEN, null)
+        val zoneId = prefs.getString(KEY_ZONE_ID, null)
+        val recordName = prefs.getString(KEY_RECORD_NAME, null)
         binding.showIpButton.isEnabled = false
+        binding.showIpButton.text = "Checking..."
+        setIpButtonColor(Color.parseColor("#757575"))
+
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val ip = withContext(Dispatchers.IO) { fetchPublicIp() }
-                Toast.makeText(this@MainActivity, "Public IP: $ip", Toast.LENGTH_LONG).show()
+                if (token.isNullOrBlank() || zoneId.isNullOrBlank() || recordName.isNullOrBlank()) {
+                    binding.showIpButton.text = "Phone IP: $ip (set up Cloudflare zone first)"
+                    setIpButtonColor(Color.parseColor("#757575"))
+                    return@launch
+                }
+                val existing = withContext(Dispatchers.IO) { findRecord(token, zoneId, recordName) }
+                val cfIp = existing?.second
+                when {
+                    cfIp == null -> {
+                        binding.showIpButton.text = "Phone IP: $ip (no DNS record yet)"
+                        setIpButtonColor(Color.parseColor("#757575"))
+                    }
+                    cfIp == ip -> {
+                        binding.showIpButton.text = "In sync: $ip"
+                        setIpButtonColor(Color.parseColor("#2E7D32"))
+                    }
+                    else -> {
+                        binding.showIpButton.text = "Out of sync: phone $ip / DNS $cfIp"
+                        setIpButtonColor(Color.parseColor("#C62828"))
+                    }
+                }
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                binding.showIpButton.text = "Error: ${e.message}"
+                setIpButtonColor(Color.parseColor("#757575"))
             } finally {
                 binding.showIpButton.isEnabled = true
             }
         }
+    }
+
+    private fun setIpButtonColor(color: Int) {
+        binding.showIpButton.backgroundTintList = ColorStateList.valueOf(color)
     }
 
     private fun performUpdate() {
