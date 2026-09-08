@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         binding.pinShortcutButton.setOnClickListener { pinHomeScreenShortcut() }
         binding.showIpButton.setOnClickListener { showPublicIp() }
 
+        showPublicIp()
         if (intent.hasExtra(EXTRA_AUTO_RUN)) {
             performUpdate()
         }
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        showPublicIp()
         if (intent.hasExtra(EXTRA_AUTO_RUN)) {
             performUpdate()
         }
