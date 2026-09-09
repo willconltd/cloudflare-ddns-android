@@ -22,6 +22,10 @@ No servers, no accounts, no ads. Everything runs on your phone and talks directl
 
 Optional: tap **Add Home Screen Shortcut** to pin an icon that runs the update directly, or long-press the app icon in your launcher for the same quick action.
 
+### If you also VPN into your own network
+
+If you connect to a VPN back into the same network this hostname points at, your phone's "public IP" as seen by the app becomes your router's own WAN IP while the VPN is up — not your phone's real address. Writing that would corrupt the record. The app already detects an active VPN connection and skips the update automatically in that case. As a second layer of protection, you can also enter your router's public IP in Settings under "Router/home IP to avoid" — if the fetched IP ever matches it, the update is skipped regardless of whether the VPN was detected.
+
 ## Building it yourself
 
 Requires a JDK (17+) and the Android SDK. From the project root:
