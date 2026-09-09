@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
@@ -161,7 +163,19 @@ class MainActivity : AppCompatActivity() {
         ShortcutManagerCompat.requestPinShortcut(this, shortcut, null)
     }
 
+    private fun isVpnActive(): Boolean {
+        val cm = getSystemService(ConnectivityManager::class.java) ?: return false
+        val network = cm.activeNetwork ?: return false
+        val capabilities = cm.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+    }
+
     private fun showPublicIp() {
+        if (isVpnActive()) {
+            binding.showIpButton.text = "VPN Connected\n(can't check real IP)"
+            setIpButtonColor(Color.parseColor("#EF6C00"))
+            return
+        }
         val token = prefs.getString(KEY_TOKEN, null)
         val zoneId = prefs.getString(KEY_ZONE_ID, null)
         val recordName = prefs.getString(KEY_RECORD_NAME, null)
@@ -207,6 +221,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun performUpdate() {
+        if (isVpnActive()) {
+            binding.statusText.text = "VPN connected — skipping update to avoid writing your home IP"
+            return
+        }
         val token = prefs.getString(KEY_TOKEN, null)
         val zoneId = prefs.getString(KEY_ZONE_ID, null)
         val recordName = prefs.getString(KEY_RECORD_NAME, null)
