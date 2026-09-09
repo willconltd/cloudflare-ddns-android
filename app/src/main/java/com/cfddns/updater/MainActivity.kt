@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_TOKEN = "cf_api_token"
         private const val KEY_ZONE_ID = "cf_zone_id"
         private const val KEY_RECORD_NAME = "cf_record_name"
+        private const val KEY_AVOID_IP = "avoid_ip"
         private const val KEY_LAST_IP = "last_ip"
         private const val KEY_LAST_TIME = "last_time"
         private const val EXTRA_AUTO_RUN = "auto_run"
@@ -120,16 +121,24 @@ class MainActivity : AppCompatActivity() {
             inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD or InputType.TYPE_CLASS_TEXT
             setText(prefs.getString(KEY_TOKEN, ""))
         }
+        val avoidIpInput = EditText(this).apply {
+            hint = "Router/home IP to avoid writing (optional)"
+            setText(prefs.getString(KEY_AVOID_IP, ""))
+        }
 
         container.addView(recordInput)
         container.addView(zoneInput)
         container.addView(tokenInput)
+        container.addView(avoidIpInput)
 
         AlertDialog.Builder(this)
             .setTitle("Cloudflare Settings")
             .setMessage(
                 "Find your Zone ID on the Cloudflare dashboard's zone overview page. " +
-                "Create an API token with \"Zone > DNS > Edit\" permission scoped to that zone."
+                "Create an API token with \"Zone > DNS > Edit\" permission scoped to that zone. " +
+                "If you also VPN into your own network, enter your router's public IP as the " +
+                "one to avoid — this stops the app from writing that IP if a VPN connection " +
+                "routes your traffic through it."
             )
             .setView(container)
             .setPositiveButton("Save") { _, _ ->
@@ -137,6 +146,7 @@ class MainActivity : AppCompatActivity() {
                     .putString(KEY_RECORD_NAME, recordInput.text.toString().trim())
                     .putString(KEY_ZONE_ID, zoneInput.text.toString().trim())
                     .putString(KEY_TOKEN, tokenInput.text.toString().trim())
+                    .putString(KEY_AVOID_IP, avoidIpInput.text.toString().trim())
                     .apply()
                 refreshHostnameText()
                 refreshStatusText()
@@ -179,6 +189,7 @@ class MainActivity : AppCompatActivity() {
         val token = prefs.getString(KEY_TOKEN, null)
         val zoneId = prefs.getString(KEY_ZONE_ID, null)
         val recordName = prefs.getString(KEY_RECORD_NAME, null)
+        val avoidIp = prefs.getString(KEY_AVOID_IP, null)
         binding.showIpButton.isEnabled = false
         binding.showIpButton.text = "Checking..."
         setIpButtonColor(Color.parseColor("#757575"))
@@ -186,6 +197,11 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val ip = withContext(Dispatchers.IO) { fetchPublicIp() }
+                if (!avoidIp.isNullOrBlank() && ip == avoidIp) {
+                    binding.showIpButton.text = "Matches router IP to avoid\n(VPN routing? can't check real IP)"
+                    setIpButtonColor(Color.parseColor("#EF6C00"))
+                    return@launch
+                }
                 if (token.isNullOrBlank() || zoneId.isNullOrBlank() || recordName.isNullOrBlank()) {
                     binding.showIpButton.text = "Phone IP: $ip (set up Cloudflare zone first)"
                     setIpButtonColor(Color.parseColor("#757575"))
@@ -228,6 +244,7 @@ class MainActivity : AppCompatActivity() {
         val token = prefs.getString(KEY_TOKEN, null)
         val zoneId = prefs.getString(KEY_ZONE_ID, null)
         val recordName = prefs.getString(KEY_RECORD_NAME, null)
+        val avoidIp = prefs.getString(KEY_AVOID_IP, null)
         if (token.isNullOrBlank() || zoneId.isNullOrBlank() || recordName.isNullOrBlank()) {
             binding.statusText.text = "Set up your hostname, zone ID, and API token first (gear icon)"
             return
@@ -238,6 +255,10 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val ip = withContext(Dispatchers.IO) { fetchPublicIp() }
+                if (!avoidIp.isNullOrBlank() && ip == avoidIp) {
+                    binding.statusText.text = "IP matches router IP to avoid — skipping update (VPN routing?)"
+                    return@launch
+                }
                 binding.statusText.text = "Checking Cloudflare record..."
                 val existing = withContext(Dispatchers.IO) { findRecord(token, zoneId, recordName) }
 
