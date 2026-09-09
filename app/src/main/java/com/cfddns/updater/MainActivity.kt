@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showPublicIp() {
         if (isVpnActive()) {
-            binding.showIpButton.text = "VPN Connected\n(can't check real IP)"
+            binding.showIpButton.text = "VPN Connected\nCan't check real IP"
             setIpButtonColor(Color.parseColor("#EF6C00"))
             return
         }
@@ -198,12 +198,12 @@ class MainActivity : AppCompatActivity() {
             try {
                 val ip = withContext(Dispatchers.IO) { fetchPublicIp() }
                 if (!avoidIp.isNullOrBlank() && ip == avoidIp) {
-                    binding.showIpButton.text = "Matches router IP to avoid\n(VPN routing? can't check real IP)"
+                    binding.showIpButton.text = "Matches Router IP to Avoid\nVPN routing? Can't check real IP"
                     setIpButtonColor(Color.parseColor("#EF6C00"))
                     return@launch
                 }
                 if (token.isNullOrBlank() || zoneId.isNullOrBlank() || recordName.isNullOrBlank()) {
-                    binding.showIpButton.text = "Phone IP: $ip (set up Cloudflare zone first)"
+                    binding.showIpButton.text = "Phone IP: $ip\nSet up Cloudflare zone first"
                     setIpButtonColor(Color.parseColor("#757575"))
                     return@launch
                 }
@@ -211,15 +211,15 @@ class MainActivity : AppCompatActivity() {
                 val cfIp = existing?.second
                 when {
                     cfIp == null -> {
-                        binding.showIpButton.text = "Phone IP: $ip (no DNS record yet)"
+                        binding.showIpButton.text = "Phone IP: $ip\nNo DNS record yet"
                         setIpButtonColor(Color.parseColor("#757575"))
                     }
                     cfIp == ip -> {
-                        binding.showIpButton.text = "In sync: $ip"
+                        binding.showIpButton.text = "In Sync\n$ip"
                         setIpButtonColor(Color.parseColor("#2E7D32"))
                     }
                     else -> {
-                        binding.showIpButton.text = "Out of sync: phone $ip / DNS $cfIp"
+                        binding.showIpButton.text = "Out of Sync\nPhone: $ip\nDNS: $cfIp"
                         setIpButtonColor(Color.parseColor("#C62828"))
                     }
                 }
